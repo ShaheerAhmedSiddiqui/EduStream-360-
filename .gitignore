@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Optional
+.env.local
+.env.development
+.env.production
+
+
+#public
+/public
+# Logs
+*.log

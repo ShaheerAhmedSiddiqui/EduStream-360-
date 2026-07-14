@@ -13,7 +13,9 @@ const StudentSchema = new mongoose.Schema({
         type: String
     },
     CNIC: {
-        type : String
+        type : String,
+        match: [/^\d{5}-\d{7}-\d{1}$/, "CNIC must contain exactly 11 digits"]
+
     },
     classOfStudy:{
         type: Number
@@ -21,6 +23,9 @@ const StudentSchema = new mongoose.Schema({
     studyGroup:{
         type:String,
         required: true
+    },
+    profileImage: {
+        type: String,
     },
     isComplete:{
         type: Boolean,

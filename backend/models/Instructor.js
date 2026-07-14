@@ -12,6 +12,10 @@ const InstructorSchema = new mongoose.Schema({
     name:{
         type: String
     },
+    CNIC: {
+        type : String,
+        match: [/^\d{5}-\d{7}-\d{1}$/, "CNIC must be in the format 42101-1234567-1"]
+    },
     qualification:{
         type: String
     },
@@ -22,6 +26,10 @@ const InstructorSchema = new mongoose.Schema({
     classOfTeaching:{
         type: Number,
         required: true  
+    },
+    isApproved : {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps : true

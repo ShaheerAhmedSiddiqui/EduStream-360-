@@ -23,9 +23,13 @@ const lectureSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Instructor',
     },
+    isApproved: { 
+        type: Boolean,
+        default: false
+    },
     reviewedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin',
+        ref: 'User', 
     }
 }, {
     timestamps : true

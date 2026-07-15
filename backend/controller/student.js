@@ -1,47 +1,40 @@
-import Student from "../models/Student.js";
-import User from "../models/User.js";
+import { Student } from "../models/index.js";
 
-export const studentProfile = async (req, res) => {
-
+export const createOrUpdateStudentProfile = async (req, res) => {
     try {
+        const { name, CNIC, classOfStudy, studyGroup } = req.body;
+        const userId = req.user.id; 
 
-        if (!req.body) {
-            return res.status(400).json({ message: "Payload body was not received by the server." });
+        if (!studyGroup) {
+            return res.status(400).json({ message: "Study Group (field of study) is required." });
         }
 
-        const { username, email, name, CNIC, classOfStudy, studyGroup, profileImage, } = req.body;
+        let studentProfile = await Student.findOne({ where: { userId } });
 
-        const userId = req.user?._id;
-
-        if (!userId) {
-            return res.status(401).json({ message: "Not authorized, token missing." });
+        if (studentProfile) {
+            studentProfile.name = name || studentProfile.name;
+            studentProfile.CNIC = CNIC || studentProfile.CNIC;
+            studentProfile.classOfStudy = classOfStudy !== undefined ? classOfStudy : studentProfile.classOfStudy;
+            studentProfile.studyGroup = studyGroup || studentProfile.studyGroup;
+            await studentProfile.save();
+        } else {
+            studentProfile = await Student.create({
+                userId,
+                name,
+                CNIC,
+                classOfStudy,
+                studyGroup
+            });
         }
 
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { username, email },
-            { returnDocument: "after" , runValidators: true }
-        );
-
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const updatedStudent = await Student.findOneAndUpdate(
-            { userId: userId },
-            { name, CNIC, classOfStudy, studyGroup, profileImage, },
-            { new: true, upsert: true, runValidators: true }
-        );
-          res.json({
-      message: "Profile updated successfully!",
-      user: {
-        ...updatedUser._doc,
-        ...updatedStudent._doc
-      }
-    });
-
+        return res.status(200).json({
+            message: "Student profile saved successfully!",
+            profile: studentProfile
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (error.name === 'SequelizeValidationError') {
+            return res.status(400).json({ message: error.errors[0].message });
+        }
+        return res.status(500).json({ message: error.message });
     }
-}
+};

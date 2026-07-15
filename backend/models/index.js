@@ -49,7 +49,7 @@ export const Instructor = sequelize.define("Instructor", {
     },
     qualification: { type: DataTypes.STRING },
     subjectOfTeaching: { type: DataTypes.STRING },
-    classOfTeaching: { type: DataTypes.STRING },
+    classOfTeaching: { type: DataTypes.INTEGER },
 });
 
 // ──── LECTURE MODEL ────

@@ -20,7 +20,7 @@ export const studentProfile = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             { username, email },
-            { new: true, runValidators: true }
+            { returnDocument: "after" , runValidators: true }
         );
 
 
@@ -37,7 +37,7 @@ export const studentProfile = async (req, res) => {
       message: "Profile updated successfully!",
       user: {
         ...updatedUser._doc,
-        ...updatedPatient._doc
+        ...updatedStudent._doc
       }
     });
 

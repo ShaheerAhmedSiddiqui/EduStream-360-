@@ -1,70 +1,89 @@
-import User from "../models/User.js";
+import { User } from "../models/index.js";
 import jwt from "jsonwebtoken";
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: "30d",
+        expiresIn: "30d", 
     });
 };
 
+// 1. REGISTER 
 export const register = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
-        
-        const existUser = await User.findOne({ email });
-        if (existUser) {
+
+        if (!username || !email || !password || !role) {
+            return res.status(400).json({ message: "All registration fields are required." });
+        }
+
+        if (!['student', 'instructor', 'admin'].includes(role)) {
+            return res.status(400).json({ message: "Invalid system role provided." });
+        }
+
+        const emailExists = await User.findOne({ where: { email } });
+        if (emailExists) {
             return res.status(400).json({ message: "An account with this email already exists." });
+        }
+
+        const usernameExists = await User.findOne({ where: { username } });
+        if (usernameExists) {
+            return res.status(400).json({ message: "This username is already taken." });
         }
 
         const newUser = await User.create({
             username,
             email,
             password,
-            role: role || "student" 
+            role
         });
 
         return res.status(201).json({
-            message: "User registered successfully",
+            message: "User registered successfully!",
             user: {
-                _id: newUser._id,
+                id: newUser.id,
                 username: newUser.username,
                 email: newUser.email,
                 role: newUser.role,
-                token: generateToken(newUser._id)
+                token: generateToken(newUser.id)
             }
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
+// 2. LOGIN 
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: "Email and password required" });
+            return res.status(400).json({ message: "Email and password are required fields." });
         }
 
-        const user = await User.findOne({ email });
-
+        const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password." });
         }
 
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password." });
         }
 
-        return res.json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            token: generateToken(user._id), 
+        return res.status(200).json({
+            message: "Logged in successfully!",
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user.id)
+            }
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };

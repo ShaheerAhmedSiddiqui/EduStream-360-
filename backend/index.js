@@ -1,29 +1,40 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 dotenv.config();
-import express from 'express';
-import connectDB from './config/db.js';
-import authRoutes from './routes/auth.js';
-import studentRoutes from './routes/student.js'
-import instructorRoutes from './routes/intructor.js'
-import { configDotenv } from 'dotenv';
 
+import express from "express";
+import sequelize, { connectDB } from "./config/db.js";
 
-connectDB();
+import authRoutes from "./routes/auth.js";
+import studentRoutes from "./routes/student.js";
+import instructorRoutes from "./routes/intructor.js";
+
 const app = express();
+
 app.use(express.json());
 
-app.get("/", (req, res) =>{
-    return "Hello From School"
-})
-
 app.use("/api/auth", authRoutes);
-// app.use("/api/admin", authRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/intructor", instructorRoutes);
-// app.use("/api/lectures", authRoutes);
 
+app.get("/api/health", (req, res) => {
+    res.json({ status: "OK" });
+});
 
+const startServer = async () => {
+    try {
+        await connectDB();
 
-const PORT = process.env.PORT || 5000
+        await sequelize.sync({ alter: true });
+        console.log("Database synchronized.");
 
-app.listen(PORT, ()=>{console.log(`Server is running on ${PORT}`)});
+        const PORT = process.env.PORT || 5000;
+
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Server startup failed:", error);
+    }
+};
+
+startServer();

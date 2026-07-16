@@ -7,7 +7,8 @@ import sequelize, { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 import studentRoutes from "./routes/student.js";
 import instructorRoutes from "./routes/intructor.js";
-
+import adminRoutes from "./routes/admin.js"
+import lectureRoutes from "./routes/lecture.js"
 const app = express();
 
 app.use(express.json());
@@ -15,6 +16,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/instructor", instructorRoutes);
+app.use("/api/lectures", lectureRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/api/health", (req, res) => {
     res.json({ status: "OK" });

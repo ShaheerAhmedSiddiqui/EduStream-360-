@@ -50,6 +50,7 @@ export const Instructor = sequelize.define("Instructor", {
     qualification: { type: DataTypes.STRING },
     subjectOfTeaching: { type: DataTypes.STRING },
     classOfTeaching: { type: DataTypes.INTEGER },
+    isApproved: {type: DataTypes.BOOLEAN, defaultValue: false}
 });
 
 // ──── LECTURE MODEL ────
@@ -64,7 +65,8 @@ export const Lecture = sequelize.define("Lecture", {
     },
     studyGroup: { type: DataTypes.STRING, allowNull: false },
     classOfStudy: { type: DataTypes.INTEGER },
-    status: { type: DataTypes.ENUM('pending', 'approved', 'rejected'), defaultValue: 'pending' }
+    status: { type: DataTypes.ENUM('pending', 'approved', 'rejected'), defaultValue: 'pending' },
+    uploadedBy: { type: DataTypes.UUID, allowNull: false }
 });
 
 // ──── DEFINE RELATIONAL MAPS (FOREIGN KEYS) ────

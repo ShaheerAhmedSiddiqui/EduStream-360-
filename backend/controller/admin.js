@@ -11,9 +11,10 @@ export const getPendingInstructor = async (req, res) => {
 
 export const approvedInstructor = async (req, res) => {
     try {
-        const { instructorId } = req.param;
-
-        const instructor = await Instructor.findByPk(instructorId);
+        const { id } = req.params;
+        console.log(id)
+        const instructor = await Instructor.findByPk(id);
+        console.log(instructor)
 
         if (!instructor) {
             return res.status(404).json({ message: "Instructor profile not found." })
@@ -50,8 +51,8 @@ export const getAllLectures = async (req, res) =>{
 
 export const approveLectures = async (req, res) =>{
     try {
-        const lectureId = req.params;
-        const lecture = await Lecture.findByPk(lectureId);
+        const {id} = req.params;
+        const lecture = await Lecture.findByPk(id);
 
         if (!lecture) {
             return res.status(404).json({ message: "lecture not found." })
@@ -71,8 +72,8 @@ export const approveLectures = async (req, res) =>{
 
 export const rejectLectures = async (req, res) =>{
     try {
-        const lectureId = req.params;
-        const lecture = await Lecture.findByPk(lectureId);
+        const {id} = req.params;
+        const lecture = await Lecture.findByPk(id);
 
         if (!lecture) {
             return res.status(404).json({ message: "lecture not found." })

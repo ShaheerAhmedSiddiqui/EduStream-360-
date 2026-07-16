@@ -1,4 +1,4 @@
-import { Lecture, Instructor } from "../models/index.js";
+import { Lecture, Instructor, Student } from "../models/index.js";
 import { Op } from "sequelize";
 
 const getYouTubeEmbedId = (url) => {
@@ -10,7 +10,7 @@ const getYouTubeEmbedId = (url) => {
 export const uploadLecture = async (req, res) => {
     try {
         const { title, description, youtubeUrl, studyGroup, classOfStudy } = req.body;
-        const userId = req.body;
+        const userId = req.user.id;
 
         const instructor = await Instructor.findOne({ where: { userId } })
         if (!instructor) {
@@ -48,7 +48,7 @@ export const uploadLecture = async (req, res) => {
             lecture: newLecture
         })
     } catch (error) {
-
+        return res.status(500).json({ message: error.message });
     }
 }
 

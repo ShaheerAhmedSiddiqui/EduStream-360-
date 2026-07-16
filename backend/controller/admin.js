@@ -1,4 +1,4 @@
-import { Instructor, Lecture, User, lecture } from "../models/index.js";
+import { Instructor, Lecture, User } from "../models/index.js";
 
 export const getPendingInstructor = async (req, res) => {
     try {

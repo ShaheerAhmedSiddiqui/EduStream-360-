@@ -1,6 +1,6 @@
 import express from "express"
-import { getPendingInstructor, approvedInstructor, getAllLectures, approveLectures, rejectLectures } from "../controller/admin"
-import { authorize, protect } from "../middleware/auth"
+import { getPendingInstructor, approvedInstructor, getAllLectures, approveLectures, rejectLectures } from "../controller/admin.js"
+import { authorize, protect } from "../middleware/auth.js"
 const router = express.Router()
 
 router.get("/instructors/pending", protect, authorize("admin"), getPendingInstructor);

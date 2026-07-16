@@ -1,4 +1,5 @@
 import { Lecture, Instructor } from "../models/index.js";
+import { Op } from "sequelize";
 
 const getYouTubeEmbedId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -66,9 +67,6 @@ export const getMyLectures = async (req, res) => {
     }
 };
 
-
-import { Lecture, Student } from "../models/index.js";
-import { Op } from "sequelize";
 
 export const getStudentFeed = async (req, res) => {
     try {

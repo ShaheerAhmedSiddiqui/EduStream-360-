@@ -1,6 +1,6 @@
 import express from "express";
-import { uploadLecture, getMyLectures, getStudentFeed } from "../controller/lectures";
-import { authorize, protect } from "../middleware/auth";
+import { uploadLecture, getMyLectures, getStudentFeed } from "../controller/lectures.js";
+import { authorize, protect } from "../middleware/auth.js";
 
 const router = express.Router();
 

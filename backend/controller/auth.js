@@ -1,4 +1,5 @@
 import { User } from "../models/index.js";
+import {sendStudentWelcomeEmail} from "../utils/emailServices.js"
 import jwt from "jsonwebtoken";
 
 const generateToken = (id) => {
@@ -12,12 +13,14 @@ export const register = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
 
-        if (!username || !email || !password || !role) {
-            return res.status(400).json({ message: "All registration fields are required." });
+        if (role && role !== 'student') {
+            return res.status(403).json({ 
+                message: "Registration is restricted to students only. Instructors and Admins must be invited by an Administrator." 
+            });
         }
 
-        if (!['student', 'instructor', 'admin'].includes(role)) {
-            return res.status(400).json({ message: "Invalid system role provided." });
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "Username, email, and password are required." });
         }
 
         const emailExists = await User.findOne({ where: { email } });
@@ -34,11 +37,13 @@ export const register = async (req, res) => {
             username,
             email,
             password,
-            role
+            role: 'student'
         });
 
+        sendStudentWelcomeEmail(newUser.email, newUser.username);
+
         return res.status(201).json({
-            message: "User registered successfully!",
+            message: "Student registered successfully!",
             user: {
                 id: newUser.id,
                 username: newUser.username,
@@ -52,7 +57,6 @@ export const register = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-
 // 2. LOGIN 
 export const login = async (req, res) => {
     try {

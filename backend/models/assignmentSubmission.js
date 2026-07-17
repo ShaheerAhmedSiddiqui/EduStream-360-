@@ -8,19 +8,19 @@ const AssignmentSubmission = sequelize.define("AssignmentSubmission", {
         primaryKey: true
     },
     submissionText: {
-        type: DataTypes.TEXT, // Text field for student responses or answers
+        type: DataTypes.TEXT, 
         allowNull: true
     },
     submissionFileUrl: {
-        type: DataTypes.STRING, // URL for code repos or uploaded document files
+        type: DataTypes.STRING, 
         allowNull: true
     },
     scoreObtained: {
-        type: DataTypes.INTEGER, // Remains null until graded by instructor
+        type: DataTypes.INTEGER, 
         allowNull: true
     },
     feedback: {
-        type: DataTypes.TEXT, // Optional feedback text from instructor
+        type: DataTypes.TEXT, 
         allowNull: true
     },
     submittedAt: {
@@ -31,7 +31,7 @@ const AssignmentSubmission = sequelize.define("AssignmentSubmission", {
     indexes: [
         {
             unique: true,
-            fields: ["studentId", "assignmentId"] // Prevents duplicate submissions on database level
+            fields: ["studentId", "assignmentId"] 
         }
     ]
 });

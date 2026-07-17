@@ -19,7 +19,7 @@ const QuizSubmission = sequelize.define("QuizSubmission", {
     indexes: [
         {
             unique: true,
-            fields: ["studentId", "quizId"] // Database level guardrail stopping double attempts!
+            fields: ["studentId", "quizId"] 
         }
     ]
 });

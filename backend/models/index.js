@@ -92,10 +92,10 @@ Lecture.belongsTo(Instructor, { foreignKey: 'uploadedBy' });
 User.hasMany(Lecture, { foreignKey: 'reviewedBy' });
 Lecture.belongsTo(User, { foreignKey: 'reviewedBy', as: 'AdminReviewer' });
 
-Lecture.hasOne(Quiz, { foreignKey: "lectureId", onDelete: "CASCADE" });
+Lecture.hasMany(Quiz, { foreignKey: "lectureId", onDelete: "CASCADE" });
 Quiz.belongsTo(Lecture, { foreignKey: "lectureId" });
 
-Lecture.hasOne(Assignment, { foreignKey: "lectureId", onDelete: "CASCADE" });
+Lecture.hasMany(Assignment, { foreignKey: "lectureId", onDelete: "CASCADE" });
 Assignment.belongsTo(Lecture, { foreignKey: "lectureId" });
 
 // Students submit Quizzes

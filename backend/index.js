@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import sequelize, { connectDB } from "./config/db.js";
+import { initDeadlineCron } from "./utils/cronJobs.js";
 
 import authRoutes from "./routes/auth.js";
 import studentRoutes from "./routes/student.js";
@@ -25,6 +26,8 @@ app.use("/api/quizzes", quizRoutes);
 app.get("/api/health", (req, res) => {
     res.json({ status: "OK" });
 });
+
+initDeadlineCron();
 
 const startServer = async () => {
     try {

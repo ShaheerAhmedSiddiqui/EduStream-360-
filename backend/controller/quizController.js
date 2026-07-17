@@ -13,12 +13,6 @@ export const createQuiz = async (req, res) => {
             return res.status(404).json({ message: "Linked lecture not found." });
         }
 
-        // Check if a quiz already exists for this lecture (1:1 constraint helper)
-        const existingQuiz = await Quiz.findOne({ where: { lectureId } });
-        if (existingQuiz) {
-            return res.status(400).json({ message: "A quiz is already attached to this lecture." });
-        }
-
         // Validate basic inputs
         if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !deadline) {
             return res.status(400).json({ message: "Invalid parameters. Please provide a title, a questions array, and a deadline." });

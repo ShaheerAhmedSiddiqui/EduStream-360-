@@ -1,8 +1,7 @@
 import React from 'react';
-import { ScheduleItem } from '../../types';
 
 export default function StudentDashboard() {
-  const staticSchedule: ScheduleItem[] = [
+  const staticSchedule = [
     { id: '1', type: 'Quiz', topic: 'Relational Algebra Key Constraints', closing: 'Closing in 24 hours', group: 'SE-Alpha' },
     { id: '2', type: 'Lecture Video', topic: 'Advanced Multi-Table MySQL Joins', closing: 'Uploaded Today', group: 'SE-Alpha' }
   ];
@@ -14,7 +13,7 @@ export default function StudentDashboard() {
         {/* Welcome Area */}
         <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', border: '1px solid #e1e8e4', marginBottom: '30px' }}>
           <h2 style={{ margin: '0 0 5px 0', color: '#004124', fontSize: '22px' }}>Assalam-o-Alaikum, Student Portal</h2>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Track your current lecture segments, manage pending quizes, and inspect graded milestones.</p>
+          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Track your current lecture segments, manage pending quizzes, and inspect graded milestones.</p>
         </div>
 
         {/* Dashboard Sections Grid */}

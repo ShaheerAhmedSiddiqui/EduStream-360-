@@ -1,77 +1,50 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// Create the context instance
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔄 Check for existing login session on application bootup
   useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-
-        if (storedToken && storedUser) {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (error) {
-        console.error("Failed to parse stored authentication payload:", error);
-        // Clear corrupt storage keys safely
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      } finally {
-        setLoading(false);
+    try {
+      const storedUser = localStorage.getItem('user');
+      // 🎯 THE SAFE GUARD: Only parse if the string actually exists and isn't "undefined"
+      if (storedUser && storedUser !== "undefined") {
+        setUser(JSON.parse(storedUser));
       }
-    };
-
-    initializeAuth();
+    } catch (error) {
+      console.error("Failed to safely parse local user token metadata:", error);
+      localStorage.clear(); // Clear corrupt artifacts if present
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // 📥 Handle dynamic user login data injection
-  const login = (userData, jwtToken) => {
+  const login = (userData) => {
     setUser(userData);
-    setToken(jwtToken);
-    localStorage.setItem('token', jwtToken);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token);
   };
 
-  // 📤 Clear application memory and drop session keys
   const logout = () => {
     setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  };
-
-  // Expose state and controls globally to children nodes
-  const contextValue = {
-    user,
-    token,
-    loading,
-    login,
-    logout,
-    isAuthenticated: !!token,
-    isAdmin: user?.role === 'admin',
-    isStudent: user?.role === 'student',
-    isInstructor: user?.role === 'instructor'
+    localStorage.clear();
+    window.location.href = '/login';
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
+      {/* 🎯 Prevent rendering child routes while verifying local storage state */}
+      {!loading ? children : <div style={{ padding: '40px', fontFamily: 'sans-serif', color: '#004124' }}>Initializing Secure Portal Terminal...</div>}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be executed within an active AuthProvider node tree.');
+    throw new Error('useAuth must be used inside an AuthProvider component wrapper');
   }
   return context;
-}
+};

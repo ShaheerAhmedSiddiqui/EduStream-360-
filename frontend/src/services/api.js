@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 // 🔌 Initialize central instance pointing to your server node environment
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
@@ -7,6 +6,8 @@ const API = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
+
 });
 
 /**
@@ -56,11 +57,11 @@ API.interceptors.response.use(
 // 🔐 Authentication Endpoint Routes
 export const authService = {
   login: async (credentials) => {
-    const response = await API.post('/auth/login', credentials);
+    const response = await API.post('/api/auth/login', credentials);
     return response.data; // Expects back { token, user: { id, email, role, username } }
   },
   register: async (registrationData) => {
-    const response = await API.post('/auth/register', registrationData);
+    const response = await API.post('/api/auth/register', registrationData);
     return response.data;
   },
 };
@@ -68,11 +69,11 @@ export const authService = {
 // 🎓 Student-Specific Workspace Routes
 export const studentService = {
   getDashboardData: async () => {
-    const response = await API.get('/student/dashboard');
+    const response = await API.get('/api/student/dashboard');
     return response.data; // Returns enrolled courses and upcoming timelines
   },
   getProfile: async () => {
-    const response = await API.get('/student/profile');
+    const response = await API.get('/api/student/profile');
     return response.data;
   },
 };
@@ -80,11 +81,11 @@ export const studentService = {
 // ⚙️ Administrative Overview Management Routes
 export const adminService = {
   getAllUsers: async () => {
-    const response = await API.get('/admin/users');
+    const response = await API.get('/api/admin/users');
     return response.data;
   },
   updateUserStatus: async (userId, payload) => {
-    const response = await API.get(`/admin/users/${userId}`, payload);
+    const response = await API.get(`/api/admin/users/${userId}`, payload);
     return response.data;
   },
 };

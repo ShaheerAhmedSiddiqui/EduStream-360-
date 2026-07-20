@@ -1,90 +1,201 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { authService } from '../services/api';
+import { useAuth } from '../context/AuthContext'; 
+import API from '../services/api';
 
 export default function Login() {
-    const navigate = useNavigate();
-    const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth(); 
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-    const handleLoginSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrorMessage('');
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
 
-        const [loading, setLoading] = useState(false);
-        const [errorMessage, setErrorMessage] = useState('');
-        
-        try {
-            const data = await authService.login({ email, password });
-            login(data.user, data.token);
+    try {
+      const response = await API.post('/api/auth/login', { email, password });
+      const userData = response.data.user; 
 
-            if (data.user.role === 'admin') {
-                navigate('/admin/dashboard');
-            } else if (data.user.role === 'student') {
-                navigate('/student/dashboard');
-            } else if (data.user.role === 'instructor') {
-                navigate('/instructor/dashboard');
-            } else {
-                navigate('/unauthorized');
-            }
-        } catch (error) {
-            console.error('Login dispatch error:', error);
-            const friendlyMessage = error.response?.data?.message 
-            || 'Could not establish connection with portal nodes. Please check backend status.';
-                setErrorMessage(friendlyMessage);
-        } finally {
-            setLoading(false);
-        }
-    };
+      if (!userData || !userData.token) {
+        throw new Error("Invalid response format from server.");
+      }
+      login(userData); 
 
-    return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f4f7f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", padding: '20px' }}>
-            <div style={{ backgroundColor: '#ffffff', width: '100%', maxWidth: '420px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0, 65, 36, 0.08)', overflow: 'hidden', border: '1px solid #e1e8e4' }}>
+      if (userData.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (userData.role === 'instructor') {
+        navigate('/instructor/dashboard');
+      } else if (userData.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
 
-                {/* Flag Green Identity Header */}
-                <div style={{ backgroundColor: '#004124', padding: '35px 20px', textAlign: 'center', color: '#ffffff' }}>
-                    <div style={{ fontSize: '32px', marginBottom: '5px' }}>🇵🇰</div>
-                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '700', letterSpacing: '0.5px' }}>Welcome Back</h1>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#a3cfbb', fontWeight: '300' }}>EduStream Portal Sign In</p>
-                </div>
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrorMessage(error.response?.data?.message || error.message || 'Login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                {/* Input Fields */}
-                <form onSubmit={handleLoginSubmit} style={{ padding: '30px' }}>
-                    <div style={{ marginBottom: '18px' }}>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="shaheer@university.edu"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }}
-                            required
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '24px' }}>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }}
-                            required
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        style={{ width: '100%', backgroundColor: '#004124', color: '#ffffff', padding: '13px', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0, 65, 36, 0.15)' }}
-                    >
-                        Access System Dashboard
-                    </button>
-                </form>
-            </div>
+  return (
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.headerContainer}>
+          <h2 style={styles.title}>Portal Login</h2>
+          <p style={styles.subtitle}>Sign in to access your secure dashboard workspace</p>
         </div>
-    );
+
+        {errorMessage && (
+          <div style={styles.errorBox}>
+            <span style={styles.errorIcon}>⚠️</span>
+            <span style={styles.errorText}>{errorMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleLoginSubmit} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Email Address</label>
+            <input 
+              type="email" 
+              placeholder="name@university.edu" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              style={styles.input} 
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              style={styles.input} 
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading} 
+            style={loading ? { ...styles.button, ...styles.buttonDisabled } : styles.button}
+          >
+            {loading ? 'Verifying Credentials...' : 'Sign In'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
+
+// 🔏 Modern Styling Theme Group
+const styles = {
+  container: {
+    display: 'flex',
+    minHeight: '100vh',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f1f5f9',
+    backgroundImage: 'radial-gradient(at 0% 0%, #e2e8f0 0, transparent 50%), radial-gradient(at 50% 0%, #f1f5f9 0, transparent 50%)',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    padding: '20px',
+  },
+  card: {
+    width: '100%',
+    maxWidth: '420px',
+    backgroundColor: '#ffffff',
+    borderRadius: '16px',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03)',
+    padding: '40px 32px',
+    boxSizing: 'border-box',
+  },
+  headerContainer: {
+    textAlign: 'center',
+    marginBottom: '28px',
+  },
+  title: {
+    color: '#0f172a',
+    fontSize: '28px',
+    fontWeight: '700',
+    margin: '0 0 8px 0',
+    letterSpacing: '-0.5px',
+  },
+  subtitle: {
+    color: '#64748b',
+    fontSize: '14px',
+    margin: 0,
+    lineHeight: '1.5',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  label: {
+    color: '#334155',
+    fontSize: '13px',
+    fontWeight: '600',
+  },
+  input: {
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '1px solid #cbd5e1',
+    fontSize: '15px',
+    color: '#0f172a',
+    backgroundColor: '#fff',
+    outline: 'none',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+    boxSizing: 'border-box',
+    width: '100%',
+  },
+  errorBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    backgroundColor: '#fef2f2',
+    border: '1px solid #fca5a5',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    marginBottom: '20px',
+  },
+  errorIcon: {
+    fontSize: '16px',
+  },
+  errorText: {
+    color: '#991b1b',
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+  button: {
+    marginTop: '8px',
+    padding: '14px',
+    backgroundColor: '#004124', // Your custom dark green brand color
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease, transform 0.1s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 65, 36, 0.15)',
+  },
+  buttonDisabled: {
+    backgroundColor: '#6b7280',
+    cursor: 'not-allowed',
+    boxShadow: 'none',
+  },
+};

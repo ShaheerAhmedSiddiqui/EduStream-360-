@@ -4,6 +4,6 @@ import {createOrUpdateInstructorProfile} from '../controller/instructor.js'
 
 const router  = express.Router();
 
-router.put("/profile", protect, authorize("instructor"), createOrUpdateInstructorProfile);
+router.put("/profile", protect, authorize("admin"), createOrUpdateInstructorProfile);
 // router.post("/upload_lecture", protect, authorize("instructor"), upload_lecture);
 export default router;

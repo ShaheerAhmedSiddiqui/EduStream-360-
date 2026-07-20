@@ -1,4 +1,7 @@
 import React from 'react';
+import { Card, CardContent, Typography, Grid, Box, Chip, Button, Stack } from '@mui/material';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 export default function StudentQuizzes() {
   const staticQuizzes = [
@@ -7,42 +10,82 @@ export default function StudentQuizzes() {
   ];
 
   return (
-    <div style={styles.card}>
-      <h4 style={styles.sectionHeading}>Assigned Evaluation Targets</h4>
-      <div style={styles.grid}>
-        {staticQuizzes.map((quiz) => (
-          <div key={quiz.id} style={styles.quizBox}>
-            <div style={styles.badgeRow}>
-              <span style={{ ...styles.badge, backgroundColor: quiz.status === 'Completed' ? '#dcfce7' : '#fef9c3', color: quiz.status === 'Completed' ? '#166534' : '#854d0e' }}>
-                {quiz.status}
-              </span>
-              {quiz.score && <span style={styles.scoreText}>Score: {quiz.score}</span>}
-            </div>
-            <h5 style={styles.quizTitle}>{quiz.title}</h5>
-            <span style={styles.subtext}>Linked Context: {quiz.lectureName}</span>
-            <span style={styles.subtext}>Scope: {quiz.questionsCount} Multiple Choice Questions</span>
-            
-            {quiz.status === 'Pending' && (
-              <button style={styles.startBtn} onClick={() => alert('Launching evaluation engine sequence...')}>
-                🚀 Start Test
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card variant="outlined" sx={{ borderRadius: '12px' }}>
+      <CardContent sx={{ p: 3 }}>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+          <AssignmentIcon sx={{ color: '#004124' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#004124' }}>
+            Assigned Evaluation Targets
+          </Typography>
+        </Stack>
+
+        <Grid container spacing={2.5}>
+          {staticQuizzes.map((quiz) => (
+            <Grid item xs={12} sm={6} key={quiz.id}>
+              <Box
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  p: 2.5,
+                  borderRadius: '8px',
+                  backgroundColor: '#fff',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1
+                }}
+              >
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Chip
+                    label={quiz.status}
+                    size="small"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: '11px',
+                      backgroundColor: quiz.status === 'Completed' ? '#dcfce7' : '#fef9c3',
+                      color: quiz.status === 'Completed' ? '#166534' : '#854d0e',
+                    }}
+                  />
+                  {quiz.score && (
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#166534' }}>
+                      Score: {quiz.score}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Typography sx={{ fontWeight: 600, color: '#0f172a', fontSize: '15px' }}>
+                  {quiz.title}
+                </Typography>
+                
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Linked Context: {quiz.lectureName}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Scope: {quiz.questionsCount} Multiple Choice Questions
+                </Typography>
+
+                {quiz.status === 'Pending' && (
+                  <Button
+                    variant="contained"
+                    startIcon={<RocketLaunchIcon />}
+                    onClick={() => alert('Launching evaluation engine sequence...')}
+                    sx={{
+                      mt: 1.5,
+                      backgroundColor: '#004124',
+                      color: '#fff',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      '&:hover': { backgroundColor: '#002917' }
+                    }}
+                  >
+                    Start Test
+                  </Button>
+                )}
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </CardContent>
+    </Card>
   );
 }
-
-const styles = {
-  card: { backgroundColor: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' },
-  sectionHeading: { margin: '0 0 20px 0', color: '#004124', fontSize: '18px', fontWeight: '600' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
-  quizBox: { border: '1px solid #e2e8f0', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' },
-  badgeRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' },
-  badge: { padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', uppercase: 'true' },
-  scoreText: { fontSize: '13px', fontWeight: '600', color: '#166534' },
-  quizTitle: { margin: '0 0 2px 0', fontSize: '16px', color: '#0f172a', fontWeight: '600' },
-  subtext: { fontSize: '13px', color: '#64748b' },
-  startBtn: { marginTop: '14px', padding: '10px', border: 'none', borderRadius: '6px', backgroundColor: '#004124', color: '#fff', cursor: 'pointer', fontWeight: '600', transition: 'background 0.2s', textAlign: 'center' }
-};

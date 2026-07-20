@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { Card, CardContent, Typography, TextField, Button, Box, Stack } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function StudentProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,64 +27,110 @@ export default function StudentProfile() {
   };
 
   return (
-    <div style={styles.card}>
-      <div style={styles.header}>
-        <h4 style={styles.sectionHeading}>Academic Registry Profile</h4>
-        <button 
-          type="button" 
-          onClick={() => setIsEditing(!isEditing)} 
-          style={isEditing ? styles.cancelBtn : styles.editBtn}
-        >
-          {isEditing ? 'Discard Changes' : '✏️ Modify Details'}
-        </button>
-      </div>
+    <Card variant="outlined" sx={{ maxWidth: 750, borderRadius: '12px' }}>
+      <CardContent sx={{ p: 4 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <AccountCircleIcon sx={{ color: '#004124' }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#004124' }}>
+              Academic Registry Profile
+            </Typography>
+          </Stack>
+          
+          <Button
+            variant="contained"
+            color={isEditing ? "error" : "inherit"}
+            startIcon={isEditing ? <CloseIcon /> : <EditIcon />}
+            onClick={() => setIsEditing(!isEditing)}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 600,
+              boxShadow: 'none',
+              backgroundColor: isEditing ? '#fee2e2' : '#e2e8f0',
+              color: isEditing ? '#991b1b' : '#334155',
+              '&:hover': {
+                backgroundColor: isEditing ? '#fecaca' : '#cbd5e1',
+                boxShadow: 'none'
+              }
+            }}
+          >
+            {isEditing ? 'Discard Changes' : 'Modify Details'}
+          </Button>
+        </Stack>
 
-      <form onSubmit={handleSaveSubmit} style={styles.form}>
-        <div style={styles.grid}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Full Name</label>
-            <input type="text" name="fullName" value={profile.fullName} onChange={handleInputChange} disabled style={styles.inputDisabled} />
-          </div>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>System Enrollment ID</label>
-            <input type="text" name="enrollmentId" value={profile.enrollmentId} onChange={handleInputChange} disabled style={styles.inputDisabled} />
-          </div>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Contact Phone String</label>
-            <input type="text" name="contactNumber" value={profile.contactNumber} onChange={handleInputChange} disabled={!isEditing} style={isEditing ? styles.input : styles.inputDisabled} />
-          </div>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Academic Year Cohort</label>
-            <input type="text" name="academicYear" value={profile.academicYear} onChange={handleInputChange} disabled={!isEditing} style={isEditing ? styles.input : styles.inputDisabled} />
-          </div>
-          <div style={styles.inputGroupFull}>
-            <label style={styles.label}>Specialization Focus Track</label>
-            <input type="text" name="specialization" value={profile.specialization} onChange={handleInputChange} disabled={!isEditing} style={isEditing ? styles.input : styles.inputDisabled} />
-          </div>
-        </div>
+        <Box component="form" onSubmit={handleSaveSubmit}>
+          <Stack spacing={2.5}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <TextField
+                label="Full Name"
+                name="fullName"
+                fullWidth
+                value={profile.fullName}
+                onChange={handleInputChange}
+                disabled
+              />
+              <TextField
+                label="System Enrollment ID"
+                name="enrollmentId"
+                fullWidth
+                value={profile.enrollmentId}
+                onChange={handleInputChange}
+                disabled
+              />
+            </Stack>
 
-        {isEditing && (
-          <button type="submit" style={styles.saveBtn}>
-            💾 Apply Portfolio Updates
-          </button>
-        )}
-      </form>
-    </div>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <TextField
+                label="Contact Phone String"
+                name="contactNumber"
+                fullWidth
+                value={profile.contactNumber}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+              <TextField
+                label="Academic Year Cohort"
+                name="academicYear"
+                fullWidth
+                value={profile.academicYear}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+            </Stack>
+
+            <TextField
+              label="Specialization Focus Track"
+              name="specialization"
+              fullWidth
+              value={profile.specialization}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+            />
+
+            {isEditing && (
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<SaveIcon />}
+                sx={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: '#004124',
+                  color: '#fff',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  px: 3,
+                  py: 1.2,
+                  boxShadow: '0 4px 6px rgba(0,65,36,0.1)',
+                  '&:hover': { backgroundColor: '#002917' }
+                }}
+              >
+                Apply Portfolio Updates
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
-
-const styles = {
-  card: { backgroundColor: '#fff', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', maxWidth: '750px' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
-  sectionHeading: { margin: 0, color: '#004124', fontSize: '18px', fontWeight: '600' },
-  editBtn: { padding: '8px 14px', backgroundColor: '#e2e8f0', color: '#334155', border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' },
-  cancelBtn: { padding: '8px 14px', backgroundColor: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' },
-  form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' },
-  inputGroup: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  inputGroupFull: { display: 'flex', flexDirection: 'column', gap: '6px', gridColumn: 'span 2' },
-  label: { fontSize: '13px', fontWeight: '600', color: '#475569' },
-  input: { padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box', width: '100%', color: '#0f172a' },
-  inputDisabled: { padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', backgroundColor: '#f8fafc', boxSizing: 'border-box', width: '100%', color: '#64748b' },
-  saveBtn: { padding: '14px', backgroundColor: '#004124', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '15px', cursor: 'pointer', alignSelf: 'flex-start', boxShadow: '0 4px 6px rgba(0,65,36,0.1)' }
-};

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, TextField, Button, Box, Stack } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Save';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Edit as EditIcon, Close as CloseIcon, Save as SaveIcon, AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 
 export default function StudentProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -31,27 +28,22 @@ export default function StudentProfile() {
       <CardContent sx={{ p: 4 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <AccountCircleIcon sx={{ color: '#004124' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#004124' }}>
+            <AccountCircleIcon color="primary" />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
               Academic Registry Profile
             </Typography>
           </Stack>
-          
+
           <Button
             variant="contained"
-            color={isEditing ? "error" : "inherit"}
+            color={isEditing ? 'error' : 'inherit'}
             startIcon={isEditing ? <CloseIcon /> : <EditIcon />}
             onClick={() => setIsEditing(!isEditing)}
             sx={{
               textTransform: 'none',
               fontWeight: 600,
               boxShadow: 'none',
-              backgroundColor: isEditing ? '#fee2e2' : '#e2e8f0',
-              color: isEditing ? '#991b1b' : '#334155',
-              '&:hover': {
-                backgroundColor: isEditing ? '#fecaca' : '#cbd5e1',
-                boxShadow: 'none'
-              }
+              '&:hover': { boxShadow: 'none' }
             }}
           >
             {isEditing ? 'Discard Changes' : 'Modify Details'}
@@ -111,18 +103,15 @@ export default function StudentProfile() {
               <Button
                 type="submit"
                 variant="contained"
+                color="primary"
                 startIcon={<SaveIcon />}
                 sx={{
                   alignSelf: 'flex-start',
-                  backgroundColor: '#004124',
-                  color: '#fff',
                   textTransform: 'none',
                   fontWeight: 600,
                   fontSize: '15px',
                   px: 3,
                   py: 1.2,
-                  boxShadow: '0 4px 6px rgba(0,65,36,0.1)',
-                  '&:hover': { backgroundColor: '#002917' }
                 }}
               >
                 Apply Portfolio Updates

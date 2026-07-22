@@ -1,36 +1,5 @@
-import { Instructor, Lecture, User } from "../models/index.js";
+import { Lecture, User } from "../models/index.js";
 import { sendStaffCredentialsEmail } from "../utils/emailServices.js"
-export const getPendingInstructor = async (req, res) => {
-    try {
-        const pending = await Instructor.findAll({ where: { isApproved: false } });
-        return res.status(200).json(pending);
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
-
-export const approvedInstructor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(id)
-        const instructor = await Instructor.findByPk(id);
-        console.log(instructor)
-
-        if (!instructor) {
-            return res.status(404).json({ message: "Instructor profile not found." })
-        }
-
-        instructor.isApproved = true;
-        await instructor.save();
-
-        return res.status(200).json({
-            message: `Instructor ${instructor.name} has been approved successfully!`,
-            instructor
-        });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
 
 
 export const getAllLectures = async (req, res) =>{
@@ -94,13 +63,13 @@ export const rejectLectures = async (req, res) =>{
 
 
 
-export const createStaffUser = async (req, res) => {
+export const createAdmin = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
 
-        if (!['instructor', 'admin'].includes(role)) {
+        if (!['admin'].includes(role)) {
             return res.status(400).json({ 
-                message: "Invalid action. Admin user provisioning can only create 'instructor' or 'admin' accounts." 
+                message: "Invalid action. Admin user provisioning can only create  'admin' accounts." 
             });
         }
 

@@ -21,8 +21,8 @@ export const createQuiz = async (req, res) => {
         // Create the quiz in database
         const quiz = await Quiz.create({
             title,
-            questions, // Sequelize automatically serializes array/JSON
-            totalMarks: totalMarks || questions.length, // Defaults to 1 mark per question
+            questions, 
+            totalMarks: totalMarks || questions.length, 
             deadline: new Date(deadline),
             lectureId
         });
@@ -43,9 +43,8 @@ export const createQuiz = async (req, res) => {
 export const submitQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
-        const { answers } = req.body; // Expected format: [0, 2, 1, ...] (array of selected option indexes matching question index)
+        const { answers } = req.body; 
 
-        // Find the student profile of the logged-in user
         const student = await Student.findOne({ where: { userId: req.user.id } });
         if (!student) {
             return res.status(403).json({ message: "Access denied. Only registered students can submit quizzes." });

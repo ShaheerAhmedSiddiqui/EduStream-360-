@@ -55,7 +55,7 @@ const SUBJECT_OPTIONS = [
 ];
 
 const emptyAdminForm = { username: '', email: '', password: '' };
-const emptyInstructorForm = { name: '', cnic: '', qualification: '', subjectOfTeaching: '', classOfTeaching: '' };
+const emptyInstructorForm = { email: '', password: '', name: '', cnic: '', qualification: '', subjectOfTeaching: '', classOfTeaching: '' };
 
 function formatCNIC(value) {
   const digits = value.replace(/\D/g, '').slice(0, 13);
@@ -202,6 +202,22 @@ export default function AdminCreateUser() {
                   value={instructorForm.name}
                   onChange={(e) => setInstructorForm({ ...instructorForm, name: e.target.value })}
                   placeholder="e.g., Prof. Sarah Conner"
+                />
+                <TextField
+                  label="Email"
+                  required
+                  fullWidth
+                  value={instructorForm.email}
+                  onChange={(e) => setInstructorForm({ ...instructorForm, email: e.target.value })}
+                  placeholder="e.g., john@example.com"
+                />
+                <TextField
+                  label="Password"
+                  required
+                  fullWidth
+                  value={instructorForm.password}
+                  onChange={(e) => setInstructorForm({ ...instructorForm, password: e.target.value })}
+                  placeholder="e.g., john123!@# "
                 />
                 <TextField
                   label="CNIC"

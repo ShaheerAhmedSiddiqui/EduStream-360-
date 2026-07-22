@@ -114,3 +114,70 @@ export const sendStaffCredentialsEmail = async (email, username, tempPassword, r
         console.error("Error sending staff credentials email:", error);
     }
 };
+
+
+export const sendInstructorCredentials = async (email, name, password) => {
+    const htmlContent = `
+        ${emailHeader}
+
+        <h2 style="color: #1e1b4b; margin-top: 0;">Welcome to EduStream! 👨‍🏫</h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>
+            Your <strong>Instructor Account</strong> has been successfully created by the system administrator.
+        </p>
+
+        <p>You can now access the EduStream Instructor Portal using the credentials below.</p>
+
+        <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="padding:6px 0; font-weight:bold; color:#64748b;">Login Portal:</td>
+                    <td>
+                        <a href="http://localhost:5173/login"
+                           style="color:#4f46e5; text-decoration:none;">
+                            EduStream Login
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; font-weight:bold; color:#64748b;">Email:</td>
+                    <td>${email}</td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; font-weight:bold; color:#64748b;">Password:</td>
+                    <td style="color:#b91c1c; font-weight:bold;">${password}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="background:#ecfdf5; border-left:4px solid #16a34a; padding:15px; border-radius:6px;">
+            <strong>Security Recommendation</strong>
+            <p style="margin:8px 0 0;">
+                Please change your password immediately after your first login to keep your account secure.
+            </p>
+        </div>
+
+        <p style="margin-top:25px;">
+            We wish you a wonderful teaching experience with <strong>EduStream</strong>.
+        </p>
+
+        ${emailFooter}
+    `;
+
+    try {
+        await transporter.sendMail({
+            from: `"EduStream Team" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: "Your EduStream Instructor Account Credentials",
+            html: htmlContent,
+        });
+
+        console.log(`Instructor credentials sent successfully to ${email}`);
+    } catch (error) {
+        console.error("Error sending instructor credentials email:", error);
+    }
+};

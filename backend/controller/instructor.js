@@ -1,8 +1,9 @@
 import { Instructor } from "../models/index.js";
+import { sendInstructorCredentials } from '../utils/emailServices.js'
 
-export const createOrUpdateInstructorProfile = async (req, res) => {
+export const createInstructor = async (req, res) => {
     try {
-        const { name, CNIC, qualification, subjectOfTeaching, classOfTeaching } = req.body;
+        const {email, password, name, CNIC, qualification, subjectOfTeaching, classOfTeaching } = req.body;
         const userId = req.user.id; 
 
         let instructorProfile = await Instructor.findOne({ where: { userId } });
@@ -10,12 +11,17 @@ export const createOrUpdateInstructorProfile = async (req, res) => {
         if (instructorProfile) {
             instructorProfile.name = name || instructorProfile.name;
             instructorProfile.CNIC = CNIC || instructorProfile.CNIC;
+            instructorProfile.email = email || instructorProfile.email;
+            instructorProfile.password = password || instructorProfile.password;
             instructorProfile.qualification = qualification || instructorProfile.qualification;
             instructorProfile.subjectOfTeaching = subjectOfTeaching || instructorProfile.subjectOfTeaching;
+            instructorProfile.classOfTeaching = classOfTeaching || instructorProfile.classOfTeaching;
             await instructorProfile.save();
         } else {
             instructorProfile = await Instructor.create({
                 userId,
+                email, 
+                passowrd,
                 name,
                 CNIC,
                 qualification,
@@ -23,6 +29,8 @@ export const createOrUpdateInstructorProfile = async (req, res) => {
                 classOfTeaching
             });
         }
+
+        await sendInstructorCredentials(email, name, password);
 
         return res.status(200).json({
             message: "Instructor profile saved successfully!",

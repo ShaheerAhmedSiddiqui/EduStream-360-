@@ -1,12 +1,59 @@
-import React from 'react';
-import { Box, Card, CardContent, Typography, Stack, Button } from '@mui/material';
-import { PlayCircleOutlineOutlined as PlayCircleOutlineIcon, School as SchoolIcon } from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Stack,
+  Button,
+  CircularProgress,
+  Alert
+} from '@mui/material';
+import {
+  PlayCircleOutlineOutlined as PlayCircleOutlineIcon,
+  School as SchoolIcon
+} from '@mui/icons-material';
+import { studentService } from '../../services/api';
 
 export default function StudentLectures() {
-  const staticLectures = [
-    { id: 1, title: 'Introduction to Full-Stack Architectures', description: 'Understanding clients, servers, and spatial file hosting networks.', instructor: 'Dr. Sarah Jenkins', link: 'https://youtube.com' },
-    { id: 2, title: 'Database Normalization Fundamentals', description: 'Deep dive into relational schemas, table joins, and performance patterns.', instructor: 'Prof. Alex Mercer', link: 'https://youtube.com' }
-  ];
+  const [lectures, setLectures] = useState([]);
+  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function fetchLectures() {
+      try {
+        setLoading(true);
+        const response = await studentService.getMyLectures();
+
+        const lectureData = response.lectures || response || [];
+        setLectures(lectureData);
+        if (lectureData.length > 0) {
+          setSelectedLecture(lectureData[0]);
+        }
+
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load classroom lectures.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLectures();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress color="primary" />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   return (
     <Card variant="outlined" sx={{ borderRadius: '12px' }}>
@@ -14,60 +61,80 @@ export default function StudentLectures() {
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
           <SchoolIcon color="primary" />
           <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
-            Your Academic Lectures Pipeline
+            Your Academic Lectures
           </Typography>
         </Stack>
-
-        <Stack spacing={2}>
-          {staticLectures.map((lec) => (
+        {lectures.length === 0 ? (
+          <Typography color="text.secondary">No lectures published yet.</Typography>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              gap: 3
+            }}
+          >
             <Box
-              key={lec.id}
               sx={{
-                p: 2.5,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: '8px',
-                bgcolor: 'action.hover',
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                justifyContent: 'space-between',
-                alignItems: { xs: 'flex-start', sm: 'center' },
-                gap: 2
+                width: "30%",
+                borderRight: "1px solid #ddd",
+                p: 2
               }}
             >
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography sx={{ fontWeight: 600, color: 'text.primary', mb: 0.5 }}>
-                  {lec.title}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1, fontWeight: 500 }}>
-                  Conducted by: {lec.instructor}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.5 }}>
-                  {lec.description}
-                </Typography>
-              </Box>
-
-              <Button
-                component="a"
-                href={lec.link}
-                target="_blank"
-                rel="noreferrer"
-                variant="contained"
-                color="info"
-                startIcon={<PlayCircleOutlineIcon />}
-                sx={{
-                  boxShadow: 'none',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  '&:hover': { boxShadow: 'none' }
-                }}
-              >
-                Stream Video Material
-              </Button>
+              {lectures.map((lecture) => (
+                <Card
+                  key={lecture.id}
+                  sx={{
+                    mb: 2,
+                    cursor: "pointer",
+                    bgcolor:
+                      selectedLecture?.id === lecture.id
+                        ? "#e8f5e9"
+                        : "#fff"
+                  }}
+                  onClick={() => setSelectedLecture(lecture)}
+                >
+                  <CardContent>
+                    <Typography fontWeight={600}>
+                      {lecture.title}
+                    </Typography>
+                    <Typography variant="caption">
+                      {lecture.name}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
-          ))}
-        </Stack>
+            <Box
+              sx={{
+                flex: 1,
+                p: 3
+              }}
+            >
+              {selectedLecture && (
+                <>
+                  <Typography variant="h5">
+                    {selectedLecture.title}
+                  </Typography>
+                  <Typography sx={{ mb: 3 }}>
+                    {selectedLecture.description}
+                  </Typography>
+                  <iframe
+                    width="100%"
+                    height="500"
+                    src={selectedLecture.youtubeUrl}
+                    title={selectedLecture.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{
+                      border: "none",
+                      borderRadius: "12px"
+                    }}
+                  />
+                </>
+              )}
+            </Box>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

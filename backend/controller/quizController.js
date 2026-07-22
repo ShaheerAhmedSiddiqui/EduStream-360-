@@ -37,8 +37,77 @@ export const createQuiz = async (req, res) => {
     }
 };
 
+
 // =========================================================================
-// 2. SUBMIT & AUTO-GRADE QUIZ (Students Only)
+//  GET STUDENT RELEVANT QUIZZES (Students Only)
+// =========================================================================
+export const getStudentQuizzes = async (req, res) => {
+    try {
+        // 1. Identify the student
+        const student = await Student.findOne({ where: { userId: req.user.id } });
+        if (!student) {
+            return res.status(403).json({ message: "Access denied. Only registered students can view quizzes." });
+        }
+
+        // 2. Fetch all quizzes including existing submissions by this student
+        // Note: If you have course/enrollment filtering, wrap this with Lecture/Course associations.
+        const quizzes = await Quiz.findAll({
+            include: [
+                {
+                    model: Lecture,
+                    attributes: ["id", "title"] // Include lecture metadata if needed
+                },
+                {
+                    model: QuizSubmission,
+                    where: { studentId: student.id },
+                    required: false // LEFT JOIN so we still get quizzes even if not submitted
+                }
+            ],
+            order: [["deadline", "ASC"]]
+        });
+
+        const now = new Date();
+
+        // 3. Format response: strip answer keys and tag attempt status
+        const formattedQuizzes = quizzes.map((quiz) => {
+            const submission = quiz.QuizSubmissions?.[0] || null;
+            const isDeadlinePassed = now > new Date(quiz.deadline);
+
+            // Hide correct answers so students can't inspect the payload before/during the quiz
+            const sanitizedQuestions = (quiz.questions || []).map((q) => {
+                const { correctAnswerIndex, ...questionWithoutAnswer } = q;
+                return questionWithoutAnswer;
+            });
+
+            return {
+                id: quiz.id,
+                title: quiz.title,
+                totalMarks: quiz.totalMarks,
+                deadline: quiz.deadline,
+                lecture: quiz.Lecture,
+                questions: sanitizedQuestions,
+                status: {
+                    isLocked: isDeadlinePassed || !!submission,
+                    hasSubmitted: !!submission,
+                    canAttempt: !isDeadlinePassed && !submission,
+                    scoreObtained: submission ? `${submission.scoreObtained}/${quiz.totalMarks}` : null,
+                    submittedAt: submission ? submission.submittedAt : null
+                }
+            };
+        });
+
+        return res.status(200).json({
+            count: formattedQuizzes.length,
+            quizzes: formattedQuizzes
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// =========================================================================
+//  SUBMIT & AUTO-GRADE QUIZ (Students Only)
 // =========================================================================
 export const submitQuiz = async (req, res) => {
     try {
@@ -124,3 +193,4 @@ export const submitQuiz = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+

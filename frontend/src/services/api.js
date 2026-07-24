@@ -81,8 +81,8 @@ export const studentService = {
     return response.data;
   },
 
-  getProfile: async () => {
-    const response = await API.get('/api/student/profile');
+  getProfile: async (id, data) => {
+    const response = await API.put('/api/student/profile', data);
     return response.data;
   },
 };
